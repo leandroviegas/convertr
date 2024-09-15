@@ -1,24 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import ImageConvertr, { SupportedInputFormats, SUPPORTED_INPUT_FORMATS, SUPPORTED_OUTPUT_FORMATS } from "@/services/imageConverter";
 import { z } from "zod";
 import { fileTypeFromBuffer } from 'file-type';
 import { formDataToObject } from "@/utils/formDataToObject";
-
-const imageConversionSchema = z.object({
-  outputFormat: z.enum(SUPPORTED_OUTPUT_FORMATS),
-  quality: z.number().min(1).max(100).optional(),
-  width: z.number().positive().optional(),
-  height: z.number().positive().optional(),
-  fit: z.enum(["cover", "contain", "fill", "inside", "outside"]).optional(),
-  image: z.instanceof(Blob),
-});
+import { SupportedInputFormats, SUPPORTED_INPUT_FORMATS } from "@/types/ImageTypes";
+import ImageConvertr from "@/services/imageConverter";
+import { ImageSchema } from "@/schemas/Image";
 
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const formObject = formDataToObject(formData);
 
-    const validatedData = imageConversionSchema.parse({
+    const validatedData = ImageSchema.parse({
       outputFormat: formObject.outputFormat,
       quality: formObject.quality ? Number(formObject.quality) : undefined,
       width: formObject.width ? Number(formObject.width) : undefined,

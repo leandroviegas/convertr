@@ -1,13 +1,8 @@
-import sharp from 'sharp';
-
-export type SupportedInputFormats = 
-  'jpeg'| 'jpg' | 'png' | 'webp' | 'tiff' | 'avif' | 'heif' | 'gif' | 'svg' | 'raw';
-
-export type SupportedOutputFormats = 
-  'jpeg' | 'png' | 'webp' | 'avif' | 'tiff' | 'heif';
-
-export const SUPPORTED_INPUT_FORMATS = ['jpeg', 'jpg', 'png', 'webp', 'tiff', 'avif', 'heif', 'gif', 'svg', 'raw'] as const;
-export const SUPPORTED_OUTPUT_FORMATS = ['jpeg', 'png', 'webp', 'avif', 'tiff', 'heif'] as const;
+import sharp from "sharp";
+import {
+  SupportedInputFormats,
+  SupportedOutputFormats,
+} from "@/types/ImageTypes";
 
 export interface ConversionOptions {
   quality?: number;
@@ -15,6 +10,7 @@ export interface ConversionOptions {
   height?: number;
   fit?: keyof sharp.FitEnum;
 }
+
 
 export default async function ImageConvertr(
   inputBuffer: Buffer,
@@ -25,36 +21,32 @@ export default async function ImageConvertr(
   try {
     let sharpInstance = sharp(inputBuffer, { failOnError: false });
 
-    // Apply resizing if width or height is specified
     if (options.width || options.height) {
       sharpInstance = sharpInstance.resize({
         width: options.width,
         height: options.height,
-        fit: options.fit || 'contain'
+        fit: options.fit || "contain",
       });
     }
 
-    // Set default quality if not specified
     const quality = options.quality || 80;
 
     switch (outputFormat) {
-      case 'jpeg':
+      case "jpeg":
         return await sharpInstance.jpeg({ quality }).toBuffer();
-      case 'png':
+      case "png":
         return await sharpInstance.png({ quality }).toBuffer();
-      case 'webp':
+      case "webp":
         return await sharpInstance.webp({ quality }).toBuffer();
-      case 'avif':
+      case "avif":
         return await sharpInstance.avif({ quality }).toBuffer();
-      case 'tiff':
+      case "tiff":
         return await sharpInstance.tiff({ quality }).toBuffer();
-      case 'heif':
-        return await sharpInstance.heif({ quality }).toBuffer();
       default:
-        throw new Error('Unsupported output format');
+        throw new Error("Unsupported output format");
     }
   } catch (error) {
-    console.error('Error converting image:', error);
+    console.error("Error converting image:", error);
     throw error;
   }
 }
