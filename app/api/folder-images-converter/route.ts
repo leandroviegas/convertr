@@ -9,6 +9,7 @@ import { formDataToObject } from "@/utils/formDataToObject";
 import { NextRequest, NextResponse } from "next/server";
 import { CompactedSchema } from "@/schemas/Image";
 
+
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const formObject = formDataToObject(formData);
